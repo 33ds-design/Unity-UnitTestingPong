@@ -113,7 +113,7 @@ namespace PlayTests
             var updateAIMethod = typeof(PaddleManager).GetMethod("UpdateAI",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             var timerField = typeof(PaddleManager).GetField("_aiTimer",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.Instance);
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
             for (int i = 0; i < 5; i++)
             {
@@ -139,7 +139,7 @@ namespace PlayTests
             var updateAIMethod = typeof(PaddleManager).GetMethod("UpdateAI",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             var timerField = typeof(PaddleManager).GetField("_aiTimer",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.Instance);
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
             for (int i = 0; i < 5; i++)
             {
