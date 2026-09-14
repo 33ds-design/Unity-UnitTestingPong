@@ -8,7 +8,6 @@ on:
 
 env:
   UNITY_VERSION: '2022.3.48f1'
-  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
 jobs:
   editmode-tests:
@@ -25,6 +24,14 @@ jobs:
           bash scripts/patch-for-ci.sh .
           cat ProjectSettings/ProjectVersion.txt
 
+      - name: Activate Unity License
+        id: activate
+        uses: game-ci/unity-activate-license@v3
+        with:
+          unityEmail: ${{ secrets.UNITY_EMAIL }}
+          unityPassword: ${{ secrets.UNITY_PASSWORD }}
+          unityVersion: ${{ env.UNITY_VERSION }}
+
       - name: Run Unity EditMode Tests
         id: tests
         uses: game-ci/unity-test-runner@v4
@@ -35,6 +42,8 @@ jobs:
           artifactsPath: test-results/editmode
           checkName: EditMode Test Results
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          unityEmail: ${{ secrets.UNITY_EMAIL }}
+          unityPassword: ${{ secrets.UNITY_PASSWORD }}
 
       - name: Upload test results
         if: always()
@@ -58,6 +67,14 @@ jobs:
           bash scripts/patch-for-ci.sh .
           cat ProjectSettings/ProjectVersion.txt
 
+      - name: Activate Unity License
+        id: activate
+        uses: game-ci/unity-activate-license@v3
+        with:
+          unityEmail: ${{ secrets.UNITY_EMAIL }}
+          unityPassword: ${{ secrets.UNITY_PASSWORD }}
+          unityVersion: ${{ env.UNITY_VERSION }}
+
       - name: Run Unity PlayMode Tests
         id: tests
         uses: game-ci/unity-test-runner@v4
@@ -68,6 +85,8 @@ jobs:
           artifactsPath: test-results/playmode
           checkName: PlayMode Test Results
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          unityEmail: ${{ secrets.UNITY_EMAIL }}
+          unityPassword: ${{ secrets.UNITY_PASSWORD }}
 
       - name: Upload test results
         if: always()
@@ -90,6 +109,14 @@ jobs:
           chmod +x scripts/patch-for-ci.sh
           bash scripts/patch-for-ci.sh .
 
+      - name: Activate Unity License
+        id: activate
+        uses: game-ci/unity-activate-license@v3
+        with:
+          unityEmail: ${{ secrets.UNITY_EMAIL }}
+          unityPassword: ${{ secrets.UNITY_PASSWORD }}
+          unityVersion: ${{ env.UNITY_VERSION }}
+
       - name: Run tests with coverage
         id: tests
         uses: game-ci/unity-test-runner@v4
@@ -101,6 +128,8 @@ jobs:
           coverageEnabled: true
           coverageOptions: generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;dontClear
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          unityEmail: ${{ secrets.UNITY_EMAIL }}
+          unityPassword: ${{ secrets.UNITY_PASSWORD }}
 
       - name: Convert coverage to Cobertura
         if: always()
