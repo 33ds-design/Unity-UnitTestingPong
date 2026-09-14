@@ -1,0 +1,128 @@
+name: Unity Test CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+env:
+  UNITY_VERSION: '2022.3.61f1'
+
+jobs:
+  editmode-tests:
+    name: EditMode Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Patch project for standard Unity
+        run: |
+          chmod +x scripts/patch-for-ci.sh
+          bash scripts/patch-for-ci.sh .
+          cat ProjectSettings/ProjectVersion.txt
+          cat Packages/manifest.json
+
+      - name: Run Unity EditMode Tests
+        id: tests
+        uses: game-ci/unity-test-runner@v4
+        with:
+          unityVersion: ${{ env.UNITY_VERSION }}
+          projectPath: .
+          testMode: EditMode
+          artifactsPath: test-results/editmode
+          checkName: EditMode Test Results
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: editmode-test-results
+          path: test-results/editmode/
+          retention-days: 30
+
+  playmode-tests:
+    name: PlayMode Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Patch project for standard Unity
+        run: |
+          chmod +x scripts/patch-for-ci.sh
+          bash scripts/patch-for-ci.sh .
+          cat ProjectSettings/ProjectVersion.txt
+          cat Packages/manifest.json
+
+      - name: Run Unity PlayMode Tests
+        id: tests
+        uses: game-ci/unity-test-runner@v4
+        with:
+          unityVersion: ${{ env.UNITY_VERSION }}
+          projectPath: .
+          testMode: PlayMode
+          artifactsPath: test-results/playmode
+          checkName: PlayMode Test Results
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playmode-test-results
+          path: test-results/playmode/
+          retention-days: 30
+
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Patch project for standard Unity
+        run: |
+          chmod +x scripts/patch-for-ci.sh
+          bash scripts/patch-for-ci.sh .
+
+      - name: Run tests with coverage
+        id: tests
+        uses: game-ci/unity-test-runner@v4
+        with:
+          unityVersion: ${{ env.UNITY_VERSION }}
+          projectPath: .
+          testMode: EditMode
+          artifactsPath: test-results/coverage
+          coverage: true
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Convert coverage to Cobertura
+        if: always()
+        run: |
+          dotnet tool install -g dotnet-reportgenerator
+          reportgenerator \
+            -reports:test-results/coverage/**/*.xml \
+            -targetdir:coverage-report \
+            -reporttypes:Cobertura
+
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage-report/Cobertura.xml
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-report/
+          retention-days: 30
