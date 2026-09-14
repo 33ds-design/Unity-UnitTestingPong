@@ -68,3 +68,17 @@ crashlytics-build.properties
 
 # Misc
 .DS_Store
+
+# Tuanjie AI generators
+/.codely-cli/
+
+# Unity Test Runner temp scenes
+/Assets/InitTestScene*.unity
+/Assets/InitTestScene*.unity.meta
+
+# CI test results and coverage (generated, not committed)
+/test-results/
+/coverage-report/
+
+# Editor-only test assets
+/Assets/Editor/Tests/

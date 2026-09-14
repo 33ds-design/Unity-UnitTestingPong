@@ -1,3 +1,8 @@
+> **Attribution**: This project is a fork of [Mina Pêcheux's Unity-UnitTestingPong](https://github.com/MinaPecheux/Unity-UnitTestingPong) (January 2022).
+> Original game code and initial test suite by Mina Pêcheux.
+> Test suite expansion, CI/CD pipeline, and coverage integration by 33ds-design (2026).
+> Licensed under the [MIT License](LICENSE).
+
 # [Unity/C#] Unit testing a Pong game (with Codemagic)
 
 **Mina Pêcheux - January 2022**
