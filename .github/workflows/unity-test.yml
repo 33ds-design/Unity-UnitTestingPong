@@ -112,48 +112,23 @@ jobs:
       - name: Convert coverage to Cobertura
         if: always()
         run: |
-          set +e
-          echo "=== Installing reportgenerator ==="
           dotnet tool install -g dotnet-reportgenerator-globaltool
           export PATH="$PATH:$HOME/.dotnet/tools"
           
-          echo "=== Workspace root contents ==="
-          ls -la
-          
-          echo "=== Searching for CodeCoverage folder ==="
-          find . -type d -iname "codecoverage" 2>/dev/null
-          
-          echo "=== Searching for coverage-related files ==="
-          find . -iname "*coverage*.xml" -not -path "*/Library/*" 2>/dev/null
-          
-          echo "=== test-results/coverage directory ==="
-          ls -laR test-results/coverage/ 2>/dev/null || echo "test-results/coverage not found or empty"
-          
-          echo "=== Searching for OpenCover or coverage XML ==="
-          find . -name "*.xml" -exec grep -l "OpenCover\|CoverageSession\|line-rate" {} \; 2>/dev/null | head -20
-          
-          # Find coverage XML files
-          COVERAGE_FILES=$(find . -type d -iname "codecoverage" -exec find {} -name "*.xml" \; 2>/dev/null | tr '\n' ';')
-          
-          if [ -z "$COVERAGE_FILES" ]; then
-            COVERAGE_FILES=$(find . -name "*.xml" -path "*coverage*" -not -name "*-results.xml" -not -path "*/Library/*" 2>/dev/null | tr '\n' ';')
-          fi
-          
-          echo "=== Coverage files to convert: $COVERAGE_FILES ==="
+          # Find OpenCover format coverage XML files from Unity Code Coverage package
+          COVERAGE_FILES=$(find CodeCoverage -name "TestCoverageResults_*.xml" 2>/dev/null | tr '\n' ';')
           
           if [ -n "$COVERAGE_FILES" ]; then
             reportgenerator \
               -reports:"$COVERAGE_FILES" \
               -targetdir:coverage-report \
               -reporttypes:Cobertura
-            echo "=== Coverage report generated ==="
-            ls -la coverage-report/
+            echo "Coverage report generated successfully"
           else
-            echo "WARNING: No coverage XML files found, creating empty report"
+            echo "WARNING: No coverage XML files found"
             mkdir -p coverage-report
             echo '<?xml version="1.0" encoding="utf-8"?><coverage line-rate="0" branch-rate="0" lines-covered="0" lines-valid="0" branches-covered="0" branches-valid="0" version="0" timestamp="0"><packages/></coverage>' > coverage-report/Cobertura.xml
           fi
-          set -e
 
       - name: Upload coverage to Codecov
         if: always()
