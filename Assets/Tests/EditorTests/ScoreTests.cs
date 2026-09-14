@@ -14,6 +14,7 @@ namespace EditorTests
         {
             _handler.scoreLeft = 0;
             _handler.scoreRight = 0;
+            _handler.StartGame();
 
             _handler.ScorePoint(true);
 
@@ -26,6 +27,7 @@ namespace EditorTests
         {
             _handler.scoreLeft = 0;
             _handler.scoreRight = 0;
+            _handler.StartGame();
 
             _handler.ScorePoint(false);
 
