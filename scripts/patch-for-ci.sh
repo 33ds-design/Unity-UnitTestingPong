@@ -8,12 +8,12 @@ PROJECT_DIR="${1:-.}"
 
 echo "[CI Patch] Patching project for standard Unity CI..."
 
-# 1. Fix ProjectVersion.txt: 2022.3.61t14 -> 2022.3.61f1
+# 1. Fix ProjectVersion.txt: 2022.3.61t14 -> 2022.3.48f1
 VERSION_FILE="$PROJECT_DIR/ProjectSettings/ProjectVersion.txt"
 if [ -f "$VERSION_FILE" ]; then
-    sed -i 's/2022\.3\.61t14/2022.3.61f1/g' "$VERSION_FILE"
+    sed -i 's/2022\.3\.61t14/2022.3.48f1/g' "$VERSION_FILE"
     sed -i '/m_TuanjieEditorVersion/d' "$VERSION_FILE"
-    echo "[CI Patch] ProjectVersion.txt patched to standard Unity 2022.3.61f1"
+    echo "[CI Patch] ProjectVersion.txt patched to standard Unity 2022.3.48f1"
 fi
 
 # 2. Remove Tuanjie-specific packages from manifest.json

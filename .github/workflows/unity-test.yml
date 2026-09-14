@@ -7,7 +7,7 @@ on:
     branches: [main, master]
 
 env:
-  UNITY_VERSION: '2022.3.61f1'
+  UNITY_VERSION: '2022.3.48f1'
 
 jobs:
   editmode-tests:
@@ -23,7 +23,6 @@ jobs:
           chmod +x scripts/patch-for-ci.sh
           bash scripts/patch-for-ci.sh .
           cat ProjectSettings/ProjectVersion.txt
-          cat Packages/manifest.json
 
       - name: Run Unity EditMode Tests
         id: tests
@@ -57,7 +56,6 @@ jobs:
           chmod +x scripts/patch-for-ci.sh
           bash scripts/patch-for-ci.sh .
           cat ProjectSettings/ProjectVersion.txt
-          cat Packages/manifest.json
 
       - name: Run Unity PlayMode Tests
         id: tests
@@ -99,7 +97,8 @@ jobs:
           projectPath: .
           testMode: EditMode
           artifactsPath: test-results/coverage
-          coverage: true
+          coverageEnabled: true
+          coverageOptions: generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;dontClear
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Convert coverage to Cobertura
