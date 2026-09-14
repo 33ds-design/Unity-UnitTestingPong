@@ -1,4 +1,4 @@
-/[Ll]ibrary/
+﻿/[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
 /[Bb]uild/
@@ -80,5 +80,3 @@ crashlytics-build.properties
 /test-results/
 /coverage-report/
 
-# Editor-only test assets
-/Assets/Editor/Tests/
