@@ -112,8 +112,14 @@ namespace PlayTests
 
             var updateAIMethod = typeof(PaddleManager).GetMethod("UpdateAI",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            for (int i = 0; i < 20; i++)
+            var timerField = typeof(PaddleManager).GetField("_aiTimer",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.Instance);
+
+            for (int i = 0; i < 5; i++)
+            {
+                timerField.SetValue(_paddle, 1f);
                 updateAIMethod.Invoke(_paddle, null);
+            }
             yield return null;
 
             Assert.That(_paddle.transform.position.y, Is.GreaterThan(yBefore), "AI paddle should move up toward ball");
@@ -132,8 +138,14 @@ namespace PlayTests
 
             var updateAIMethod = typeof(PaddleManager).GetMethod("UpdateAI",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            for (int i = 0; i < 20; i++)
+            var timerField = typeof(PaddleManager).GetField("_aiTimer",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.Instance);
+
+            for (int i = 0; i < 5; i++)
+            {
+                timerField.SetValue(_paddle, 1f);
                 updateAIMethod.Invoke(_paddle, null);
+            }
             yield return null;
 
             Assert.That(_paddle.transform.position.y, Is.LessThan(yBefore), "AI paddle should move down toward ball");
