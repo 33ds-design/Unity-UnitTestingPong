@@ -55,7 +55,7 @@ namespace PlayTests
                 _paddle.MoveUp();
             yield return null;
 
-            Assert.That(_paddle.transform.position.y, Is.LessThanOrEqualTo(4f).Within(0.01f));
+            Assert.That(_paddle.transform.position.y, Is.LessThanOrEqualTo(4.01f));
             Assert.That(_paddle.IsAtTopBound(), Is.True);
         }
 
@@ -66,7 +66,7 @@ namespace PlayTests
                 _paddle.MoveDown();
             yield return null;
 
-            Assert.That(_paddle.transform.position.y, Is.GreaterThanOrEqualTo(-4f).Within(0.01f));
+            Assert.That(_paddle.transform.position.y, Is.GreaterThanOrEqualTo(-4.01f));
             Assert.That(_paddle.IsAtBottomBound(), Is.True);
         }
 
