@@ -106,7 +106,7 @@ jobs:
           testMode: EditMode
           artifactsPath: test-results/coverage
           coverageEnabled: true
-          coverageOptions: generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;dontClear
+          coverageOptions: generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;dontClear;assemblyFilters:+Assembly-CSharp,+Pong
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Convert coverage to Cobertura
@@ -117,25 +117,26 @@ jobs:
           dotnet tool install -g dotnet-reportgenerator-globaltool
           export PATH="$PATH:$HOME/.dotnet/tools"
           
-          echo "=== Searching entire workspace for coverage files ==="
-          find . -name "*coverage*" -o -name "*Coverage*" 2>/dev/null | head -50
+          echo "=== Workspace root contents ==="
+          ls -la
           
-          echo "=== Searching for all XML files in workspace ==="
-          find . -name "*.xml" -type f 2>/dev/null | grep -v node_modules | grep -v Library | head -50
+          echo "=== Searching for CodeCoverage folder ==="
+          find . -type d -iname "codecoverage" 2>/dev/null
           
-          echo "=== test-results/coverage directory listing ==="
-          find test-results/coverage -type f 2>/dev/null
+          echo "=== Searching for coverage-related files ==="
+          find . -iname "*coverage*.xml" -not -path "*/Library/*" 2>/dev/null
           
-          echo "=== Looking for CodeCoverage output folder ==="
-          find . -type d -name "CodeCoverage" 2>/dev/null | head -10
+          echo "=== test-results/coverage directory ==="
+          ls -laR test-results/coverage/ 2>/dev/null || echo "test-results/coverage not found or empty"
           
-          # Find coverage XML files (Unity coverage format, not test results)
-          # Exclude test result files (*-results.xml)
-          COVERAGE_FILES=$(find . -name "*.xml" -path "*coverage*" -not -name "*-results.xml" 2>/dev/null | tr '\n' ';')
+          echo "=== Searching for OpenCover or coverage XML ==="
+          find . -name "*.xml" -exec grep -l "OpenCover\|CoverageSession\|line-rate" {} \; 2>/dev/null | head -20
+          
+          # Find coverage XML files
+          COVERAGE_FILES=$(find . -type d -iname "codecoverage" -exec find {} -name "*.xml" \; 2>/dev/null | tr '\n' ';')
           
           if [ -z "$COVERAGE_FILES" ]; then
-            # Try finding coverage XML in common locations
-            COVERAGE_FILES=$(find . -name "coverage*.xml" -not -name "*-results.xml" 2>/dev/null | tr '\n' ';')
+            COVERAGE_FILES=$(find . -name "*.xml" -path "*coverage*" -not -name "*-results.xml" -not -path "*/Library/*" 2>/dev/null | tr '\n' ';')
           fi
           
           echo "=== Coverage files to convert: $COVERAGE_FILES ==="
@@ -150,7 +151,6 @@ jobs:
           else
             echo "WARNING: No coverage XML files found, creating empty report"
             mkdir -p coverage-report
-            # Create a minimal Cobertura XML so Codecov doesn't error
             echo '<?xml version="1.0" encoding="utf-8"?><coverage line-rate="0" branch-rate="0" lines-covered="0" lines-valid="0" branches-covered="0" branches-valid="0" version="0" timestamp="0"><packages/></coverage>' > coverage-report/Cobertura.xml
           fi
           set -e
