@@ -112,10 +112,25 @@ jobs:
         if: always()
         run: |
           dotnet tool install -g dotnet-reportgenerator
-          reportgenerator \
-            -reports:test-results/coverage/**/*.xml \
-            -targetdir:coverage-report \
-            -reporttypes:Cobertura
+          echo "=== Finding coverage XML files ==="
+          find test-results/coverage -name "*.xml" -type f 2>/dev/null || true
+          echo "=== Coverage directory structure ==="
+          find test-results/coverage -type d 2>/dev/null | head -20 || true
+          # Try common coverage output locations
+          COVERAGE_FILES=$(find test-results/coverage -name "*.xml" -path "*/coverage*" 2>/dev/null | tr '\n' ';')
+          if [ -z "$COVERAGE_FILES" ]; then
+            COVERAGE_FILES=$(find test-results/coverage -name "*.xml" -type f 2>/dev/null | tr '\n' ';')
+          fi
+          echo "=== Files to convert: $COVERAGE_FILES ==="
+          if [ -n "$COVERAGE_FILES" ]; then
+            reportgenerator \
+              -reports:"$COVERAGE_FILES" \
+              -targetdir:coverage-report \
+              -reporttypes:Cobertura
+          else
+            echo "WARNING: No coverage XML files found"
+            mkdir -p coverage-report
+          fi
 
       - name: Upload coverage to Codecov
         if: always()

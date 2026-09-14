@@ -52,6 +52,25 @@ print(f'[CI Patch] Removed {len(removed)} packages: {', '.join(removed)}')
 "
 fi
 
+# 2b. Add Code Coverage package for coverage job
+if [ -f "$MANIFEST_FILE" ]; then
+    python3 -c "
+import json
+with open('$MANIFEST_FILE', 'r') as f:
+    manifest = json.load(f)
+
+# Add code coverage package if not present
+if 'com.unity.testtools.codecoverage' not in manifest['dependencies']:
+    manifest['dependencies']['com.unity.testtools.codecoverage'] = '1.2.5'
+    print('[CI Patch] Added com.unity.testtools.codecoverage package')
+else:
+    print('[CI Patch] Code coverage package already present')
+
+with open('$MANIFEST_FILE', 'w') as f:
+    json.dump(manifest, f, indent=2)
+"
+fi
+
 # 3. Delete packages-lock.json so Unity regenerates it with resolved deps
 LOCK_FILE="$PROJECT_DIR/Packages/packages-lock.json"
 if [ -f "$LOCK_FILE" ]; then
