@@ -34,8 +34,6 @@ jobs:
           artifactsPath: test-results/editmode
           checkName: EditMode Test Results
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          unityEmail: ${{ secrets.UNITY_EMAIL }}
-          unityPassword: ${{ secrets.UNITY_PASSWORD }}
 
       - name: Upload test results
         if: always()
@@ -69,8 +67,6 @@ jobs:
           artifactsPath: test-results/playmode
           checkName: PlayMode Test Results
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          unityEmail: ${{ secrets.UNITY_EMAIL }}
-          unityPassword: ${{ secrets.UNITY_PASSWORD }}
 
       - name: Upload test results
         if: always()
@@ -104,8 +100,6 @@ jobs:
           coverageEnabled: true
           coverageOptions: generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;dontClear
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          unityEmail: ${{ secrets.UNITY_EMAIL }}
-          unityPassword: ${{ secrets.UNITY_PASSWORD }}
 
       - name: Convert coverage to Cobertura
         if: always()
