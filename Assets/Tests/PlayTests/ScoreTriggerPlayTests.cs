@@ -16,7 +16,6 @@ namespace PlayTests
         private Rigidbody2D _ballRb;
         private GameObject _triggerObj;
         private ScoreTrigger _scoreTrigger;
-        private BoxCollider2D _triggerCol;
 
         [SetUp]
         public void SetUp()
@@ -24,8 +23,7 @@ namespace PlayTests
             _ballObj = new GameObject("Ball");
             _ballRb = _ballObj.AddComponent<Rigidbody2D>();
             _ballRb.gravityScale = 0f;
-            var ballCol = _ballObj.AddComponent<CircleCollider2D>();
-            ballCol.radius = 0.5f;
+            _ballObj.AddComponent<CircleCollider2D>();
 
             _gmObj = new GameObject("GameManager");
             _gameManager = _gmObj.AddComponent<GameManager>();
@@ -36,9 +34,8 @@ namespace PlayTests
 
             _triggerObj = new GameObject("ScoreTrigger");
             _scoreTrigger = _triggerObj.AddComponent<ScoreTrigger>();
-            _triggerCol = _triggerObj.AddComponent<BoxCollider2D>();
-            _triggerCol.isTrigger = true;
-            _triggerObj.transform.position = new Vector2(10f, 0f);
+            var triggerCol = _triggerObj.AddComponent<BoxCollider2D>();
+            triggerCol.isTrigger = true;
         }
 
         [TearDown]
@@ -53,6 +50,14 @@ namespace PlayTests
             GameManager.instance = null;
         }
 
+        private void InvokeTrigger(ScoreTrigger trigger)
+        {
+            var method = typeof(ScoreTrigger).GetMethod("OnTriggerEnter2D",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            Collider2D col = _ballObj.GetComponent<Collider2D>();
+            method.Invoke(trigger, new object[] { col });
+        }
+
         [UnityTest]
         public IEnumerator ScoreTrigger_LeftTrigger_ScoresRight()
         {
@@ -62,15 +67,10 @@ namespace PlayTests
             _gameManager.StartGame();
             yield return null;
 
-            _scoreTrigger.isLeft = true;
-            _ballObj.transform.position = _triggerObj.transform.position;
-            yield return new WaitForFixedUpdate();
-            yield return new WaitForFixedUpdate();
+            Assert.That(_gameManager.IsPlaying(), Is.True, "Game should be playing");
 
-            var method = typeof(ScoreTrigger).GetMethod("OnTriggerEnter2D",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-            Collider2D col = _ballObj.GetComponent<Collider2D>();
-            method.Invoke(_scoreTrigger, new object[] { col });
+            _scoreTrigger.isLeft = true;
+            InvokeTrigger(_scoreTrigger);
             yield return null;
 
             Assert.That(_gameManager.ScoreRight, Is.EqualTo(1), "Right should score when ball hits left trigger");
@@ -85,15 +85,10 @@ namespace PlayTests
             _gameManager.StartGame();
             yield return null;
 
-            _scoreTrigger.isLeft = false;
-            _ballObj.transform.position = _triggerObj.transform.position;
-            yield return new WaitForFixedUpdate();
-            yield return new WaitForFixedUpdate();
+            Assert.That(_gameManager.IsPlaying(), Is.True, "Game should be playing");
 
-            var method = typeof(ScoreTrigger).GetMethod("OnTriggerEnter2D",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-            Collider2D col = _ballObj.GetComponent<Collider2D>();
-            method.Invoke(_scoreTrigger, new object[] { col });
+            _scoreTrigger.isLeft = false;
+            InvokeTrigger(_scoreTrigger);
             yield return null;
 
             Assert.That(_gameManager.ScoreLeft, Is.EqualTo(1), "Left should score when ball hits right trigger");
@@ -106,10 +101,7 @@ namespace PlayTests
             yield return null;
 
             _scoreTrigger.isLeft = false;
-            var method = typeof(ScoreTrigger).GetMethod("OnTriggerEnter2D",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-            Collider2D col = _ballObj.GetComponent<Collider2D>();
-            method.Invoke(_scoreTrigger, new object[] { col });
+            InvokeTrigger(_scoreTrigger);
             yield return null;
 
             Assert.That(_gameManager.ScoreLeft, Is.EqualTo(0), "Score should not change when game not playing");
@@ -125,13 +117,9 @@ namespace PlayTests
             yield return null;
 
             _scoreTrigger.isLeft = true;
-            var method = typeof(ScoreTrigger).GetMethod("OnTriggerEnter2D",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-            Collider2D col = _ballObj.GetComponent<Collider2D>();
-
             for (int i = 0; i < 3; i++)
             {
-                method.Invoke(_scoreTrigger, new object[] { col });
+                InvokeTrigger(_scoreTrigger);
                 yield return null;
             }
 

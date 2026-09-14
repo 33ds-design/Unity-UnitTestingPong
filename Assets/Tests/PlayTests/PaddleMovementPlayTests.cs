@@ -109,12 +109,12 @@ namespace PlayTests
             _paddle.ballTarget = ballObj.transform;
 
             float yBefore = _paddle.transform.position.y;
+
+            var updateAIMethod = typeof(PaddleManager).GetMethod("UpdateAI",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             for (int i = 0; i < 20; i++)
-            {
-                _paddle.gameObject.SetActive(false);
-                _paddle.gameObject.SetActive(true);
-                yield return null;
-            }
+                updateAIMethod.Invoke(_paddle, null);
+            yield return null;
 
             Assert.That(_paddle.transform.position.y, Is.GreaterThan(yBefore), "AI paddle should move up toward ball");
             Object.Destroy(ballObj);
@@ -129,12 +129,12 @@ namespace PlayTests
             _paddle.ballTarget = ballObj.transform;
 
             float yBefore = _paddle.transform.position.y;
+
+            var updateAIMethod = typeof(PaddleManager).GetMethod("UpdateAI",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             for (int i = 0; i < 20; i++)
-            {
-                _paddle.gameObject.SetActive(false);
-                _paddle.gameObject.SetActive(true);
-                yield return null;
-            }
+                updateAIMethod.Invoke(_paddle, null);
+            yield return null;
 
             Assert.That(_paddle.transform.position.y, Is.LessThan(yBefore), "AI paddle should move down toward ball");
             Object.Destroy(ballObj);
